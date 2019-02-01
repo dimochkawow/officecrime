@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -18,6 +19,9 @@ import java.util.List;
  */
 
 public class CrimeListFragment extends Fragment {
+
+    private static final int CRIME_REQUIRES_POLICE = 1;
+    private static final int CRIME_NOT_REQUIRES_POLICE = 0;
 
     private RecyclerView crimeRecyclerView;
     private CrimeAdapter crimeAdapter;
@@ -41,22 +45,43 @@ public class CrimeListFragment extends Fragment {
         crimeRecyclerView.setAdapter(crimeAdapter);
     }
 
-    private class CrimeHolder extends RecyclerView.ViewHolder {
+    private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView crimeTitleTextView;
         private TextView crimeDateTextView;
         private Crime crime;
 
         public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_crime, parent, false));
+            initViews();
+        }
 
+        public CrimeHolder(View view) {
+            super(view);
+        }
+
+        protected void initViews() {
             crimeTitleTextView = itemView.findViewById(R.id.crime_title);
             crimeDateTextView = itemView.findViewById(R.id.crime_date);
+            itemView.setOnClickListener(this);
         }
 
         public void bind(Crime aCrime) {
             crime = aCrime;
             crimeTitleTextView.setText(crime.getTitle());
             crimeDateTextView.setText(crime.getDate().toString());
+        }
+
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(getActivity(), crime.getTitle()+ " clicked!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class PoliceCrimeHolder extends CrimeHolder {
+
+        public PoliceCrimeHolder(LayoutInflater inflater, ViewGroup parent) {
+            super(inflater.inflate(R.layout.list_item_crime_police, parent, false));
+            initViews();
         }
     }
 
@@ -70,7 +95,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public CrimeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
-            return new CrimeHolder(inflater, parent);
+            return viewType == CRIME_REQUIRES_POLICE ? new PoliceCrimeHolder(inflater, parent) : new CrimeHolder(inflater, parent);
         }
 
         @Override
@@ -82,6 +107,12 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return crimes.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            Crime crime = crimes.get(position);
+            return crime.isRequiresPolice() ? CRIME_REQUIRES_POLICE : CRIME_NOT_REQUIRES_POLICE;
         }
     }
 
