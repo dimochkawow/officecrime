@@ -1,5 +1,7 @@
 package com.epam.officecrime;
 
+import android.text.format.DateFormat;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,6 +20,10 @@ public class Crime {
     public Crime() {
         id = UUID.randomUUID();
         date = new Date();
+    }
+
+    public String getFormattedDate() {
+        return new DateFormat().format("E, MMM d, yyyy", date).toString();
     }
 
     public UUID getId() {
