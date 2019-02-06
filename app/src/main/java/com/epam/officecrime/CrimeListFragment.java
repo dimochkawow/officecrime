@@ -41,11 +41,22 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI() {
         CrimeStorage crimeStorage = CrimeStorage.get(getActivity());
         List<Crime> crimes = crimeStorage.findAll();
-        crimeAdapter = new CrimeAdapter(crimes);
-        crimeRecyclerView.setAdapter(crimeAdapter);
+
+        if (crimeAdapter == null) {
+            crimeAdapter = new CrimeAdapter(crimes);
+            crimeRecyclerView.setAdapter(crimeAdapter);
+        } else {
+            crimeAdapter.notifyDataSetChanged();
+        }
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
