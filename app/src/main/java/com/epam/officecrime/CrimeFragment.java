@@ -1,6 +1,8 @@
 package com.epam.officecrime;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +28,7 @@ import static android.widget.CompoundButton.*;
 public class CrimeFragment extends Fragment {
 
     private static final String ARG_CRIME_ID = "crime_id";
+    public static final String EXTRA_CRIME_POSITION = "com.epam.officecrime.crime_position";
 
     private Crime crime;
     private EditText titleField;
@@ -37,7 +40,16 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         crime = CrimeStorage.get(getActivity()).byId(crimeId);
+
+        //int crime_position = CrimeStorage.get(getActivity()).positionById(crimeId);
+        //setCrimePositionResult(crime_position);
     }
+
+    /*private void setCrimePositionResult(int crimePosition) {
+        Intent data = new Intent();
+        data.putExtra(EXTRA_CRIME_POSITION, crimePosition);
+        getActivity().setResult(Activity.RESULT_OK, data);
+    }*/
 
     @Nullable
     @Override

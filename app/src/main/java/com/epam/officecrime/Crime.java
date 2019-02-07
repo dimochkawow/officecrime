@@ -61,4 +61,5 @@ public class Crime {
     public void setRequiresPolice(boolean requiresPolice) {
         this.requiresPolice = requiresPolice;
     }
+
 }

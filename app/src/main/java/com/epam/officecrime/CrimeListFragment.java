@@ -1,5 +1,6 @@
 package com.epam.officecrime;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,14 +8,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,6 +23,7 @@ public class CrimeListFragment extends Fragment {
 
     private static final int CRIME_REQUIRES_POLICE = 1;
     private static final int CRIME_NOT_REQUIRES_POLICE = 0;
+    private static final int REQUEST_CRIME = 1;
 
     private RecyclerView crimeRecyclerView;
     private CrimeAdapter crimeAdapter;
@@ -47,6 +46,14 @@ public class CrimeListFragment extends Fragment {
         updateUI();
     }
 
+    private void updateUIAndNotifyChanged(int crimePosition) {
+        updateUI();
+
+        if (crimeAdapter != null) {
+            crimeAdapter.notifyItemChanged(crimePosition);
+        }
+    }
+
     private void updateUI() {
         CrimeStorage crimeStorage = CrimeStorage.get(getActivity());
         List<Crime> crimes = crimeStorage.findAll();
@@ -54,8 +61,6 @@ public class CrimeListFragment extends Fragment {
         if (crimeAdapter == null) {
             crimeAdapter = new CrimeAdapter(crimes);
             crimeRecyclerView.setAdapter(crimeAdapter);
-        } else {
-            crimeAdapter.notifyDataSetChanged();
         }
     }
 
@@ -87,8 +92,17 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Intent intent = CrimeActivity.newIntent(getActivity(), crime.getId());
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+            //startActivityForResult(intent, REQUEST_CRIME);
             startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CRIME && resultCode == Activity.RESULT_OK) {
+            int crimePosition = data.getIntExtra(CrimeFragment.EXTRA_CRIME_POSITION, 0);
+            updateUIAndNotifyChanged(crimePosition);
         }
     }
 
